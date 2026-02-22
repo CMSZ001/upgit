@@ -35,7 +35,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update
-          sudo apt install -y xvfb libx11-dev x11-utils libegl1-mesa-dev libgles2-mesa-dev
+          sudo apt install -y gcc gcc-aarch64-linux-gnu musl-tools xvfb libx11-dev x11-utils libegl1-mesa-dev libgles2-mesa-dev
 
       - name: Install dependencies on macOS
         if: matrix.os == 'macos-13'

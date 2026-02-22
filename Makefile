@@ -28,15 +28,26 @@ windows: create_dist_dir
 # ```
 linux: create_dist_dir
 	@if x86_64-linux-musl-gcc --version >/dev/null 2>&1; then \
-		echo "Using musl compiler"; \
-		export CC=x86_64-linux-musl-gcc; \
-		export CXX=x86_64-linux-musl-g++; \
+		echo "Using musl compiler for amd64"; \
+		export CC_AMD64=x86_64-linux-musl-gcc; \
+		export CXX_AMD64=x86_64-linux-musl-g++; \
 	else \
-		echo "musl compiler not found. Using gnu compiler"; \
-		export CC=gcc; \
-		export CXX=g++; \
+		echo "musl compiler for amd64 not found. Using gnu compiler"; \
+		export CC_AMD64=gcc; \
+		export CXX_AMD64=g++; \
 	fi && \
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=$$CC CXX=$$CXX go build -o $(BINARY)_cgo_linux_amd64 $(LDFLAGS) $(SRC)
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=$$CC_AMD64 CXX=$$CXX_AMD64 go build -o $(BINARY)_cgo_linux_amd64 $(LDFLAGS) $(SRC)
+
+	@if aarch64-linux-musl-gcc --version >/dev/null 2>&1; then \
+		echo "Using musl compiler for arm64"; \
+		export CC_ARM64=aarch64-linux-musl-gcc; \
+		export CXX_ARM64=aarch64-linux-musl-g++; \
+	else \
+		echo "musl compiler for arm64 not found. Using gnu compiler"; \
+		export CC_ARM64=aarch64-linux-gnu-gcc; \
+		export CXX_ARM64=aarch64-linux-gnu-g++; \
+	fi && \
+	GOOS=linux GOARCH=arm64 CGO_ENABLED=1 CC=$$CC_ARM64 CXX=$$CXX_ARM64 go build -o $(BINARY)_cgo_linux_arm64 $(LDFLAGS) $(SRC)
 
 	GOOS=linux   GOARCH=386     go build -o $(BINARY)_linux_386     $(LDFLAGS) $(SRC)
 	GOOS=linux   GOARCH=amd64   go build -o $(BINARY)_linux_amd64   $(LDFLAGS) $(SRC)
@@ -44,9 +55,8 @@ linux: create_dist_dir
 	GOOS=linux   GOARCH=arm64   go build -o $(BINARY)_linux_arm64   $(LDFLAGS) $(SRC)
 
 upx: all
-	for i in $(DIST_DIR)/*
-	do
-		upx -9 $i
+	for i in $(DIST_DIR)/*; do \
+		upx -9 $$i; \
 	done
 
 all: windows macos linux

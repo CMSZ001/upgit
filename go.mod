@@ -1,6 +1,6 @@
 module github.com/pluveto/upgit
 
-go 1.18
+go 1.23.0
 
 require (
 	github.com/alexflint/go-arg v1.4.3
